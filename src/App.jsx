@@ -1,3 +1,8 @@
+import {
+  useState,
+  useEffect,
+} from "react";
+
 import ReactFlow, {
   Background,
   Controls,
@@ -27,19 +32,53 @@ const nodeTypes = {
 };
 
 export default function App() {
-  const [nodes, setNodes, onNodesChange] =
-    useNodesState(initialNodes);
 
+  // GLOBAL RESULT
+  const [result, setResult] =
+    useState("");
+
+  // NODES
+  const [nodes, setNodes, onNodesChange] =
+    useNodesState(
+      initialNodes.map((node) => ({
+        ...node,
+
+        data: {
+          ...node.data,
+
+          result,
+          setResult,
+        },
+      }))
+    );
+
+  // EDGES
   const [edges, setEdges, onEdgesChange] =
     useEdgesState(initialEdges);
 
-  // connect nodes
+  // UPDATE NODE DATA WHEN RESULT CHANGES
+  useEffect(() => {
+    setNodes((nds) =>
+      nds.map((node) => ({
+        ...node,
+
+        data: {
+          ...node.data,
+
+          result,
+          setResult,
+        },
+      }))
+    );
+  }, [result]);
+
+  // CONNECT NODES
   const onConnect = (params) =>
     setEdges((eds) =>
       addEdge(params, eds)
     );
 
-  // add node
+  // ADD NODE
   const addNode = () => {
     const newNode = {
       id: `${nodes.length + 1}`,
@@ -53,6 +92,9 @@ export default function App() {
 
       data: {
         title: `Node ${nodes.length + 1}`,
+
+        result,
+        setResult,
       },
     };
 
@@ -62,11 +104,44 @@ export default function App() {
     ]);
   };
 
+  // ADD GROUP
+  const addGroup = () => {
+    const id = `group-${nodes.length + 1}`;
+
+    const newGroup = {
+      id,
+
+      type: "group",
+
+      position: {
+        x: 300,
+        y: 300,
+      },
+
+      style: {
+        width: 700,
+        height: 400,
+      },
+
+      data: {
+        label: `New Group`,
+      },
+    };
+
+    setNodes((nds) => [
+      ...nds,
+      newGroup,
+    ]);
+  };
+
   return (
     <div className="flex h-screen">
 
       {/* SIDEBAR */}
-      <Sidebar addNode={addNode} />
+      <Sidebar
+        addNode={addNode}
+        addGroup={addGroup}
+      />
 
       {/* FLOW */}
       <div className="flex-1">

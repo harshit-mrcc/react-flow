@@ -8,8 +8,8 @@ export const initialNodes = [
     position: { x: 50, y: 50 },
 
     style: {
-      width: 800,
-      height: 500,
+      width: 1200,
+      height: 700,
     },
 
     data: {
@@ -17,7 +17,7 @@ export const initialNodes = [
     },
   },
 
-  // CHILD NODE
+  // RESUME NODE
   {
     id: "resume-upload",
 
@@ -27,29 +27,16 @@ export const initialNodes = [
 
     extent: "parent",
 
-    position: { x: 50, y: 100 },
+    expandParent: true,
+
+    position: { x: 80, y: 180 },
 
     data: {
       title: "Resume Upload",
     },
   },
 
-  {
-    id: "skills-check",
-
-    type: "custom",
-
-    parentNode: "screening-group",
-
-    extent: "parent",
-
-    position: { x: 300, y: 100 },
-
-    data: {
-      title: "Skills Match",
-    },
-  },
-
+  // CONDITION NODE
   {
     id: "experience-check",
 
@@ -59,32 +46,101 @@ export const initialNodes = [
 
     extent: "parent",
 
-    position: { x: 550, y: 100 },
+    expandParent: true,
 
-    data: {},
+    position: { x: 450, y: 180 },
+
+    data: {
+      title: "Experience Check",
+    },
+  },
+
+  // YES NODE
+  {
+    id: "eligible-node",
+
+    type: "custom",
+
+    parentNode: "screening-group",
+
+    extent: "parent",
+
+    expandParent: true,
+
+    position: { x: 850, y: 80 },
+
+    data: {
+      title: "Eligible For Interview",
+    },
+  },
+
+  // NO NODE
+  {
+    id: "reject-node",
+
+    type: "custom",
+
+    parentNode: "screening-group",
+
+    extent: "parent",
+
+    expandParent: true,
+
+    position: { x: 850, y: 380 },
+
+    data: {
+      title: "Need More Experience",
+    },
   },
 ];
 
 export const initialEdges = [
+  // RESUME → EXPERIENCE
   {
     id: "e1-2",
+
     source: "resume-upload",
-    sourceHandle: "right",
-
-    target: "skills-check",
-    targetHandle: "left",
-
-    type: "smoothstep"
-  },
-
-  {
-    id: "e2-3",
-    source: "skills-check",
     sourceHandle: "right",
 
     target: "experience-check",
     targetHandle: "left",
 
-    type: "smoothstep"
+    type: "smoothstep",
+
+    animated: true,
+  },
+
+  // YES BRANCH
+  {
+    id: "yes-edge",
+
+    source: "experience-check",
+    sourceHandle: "yes",
+
+    target: "eligible-node",
+    targetHandle: "left",
+
+    label: "YES",
+
+    type: "smoothstep",
+
+    animated: true,
+  },
+
+  // NO BRANCH
+  {
+    id: "no-edge",
+
+    source: "experience-check",
+    sourceHandle: "no",
+
+    target: "reject-node",
+    targetHandle: "left",
+
+    label: "NO",
+
+    type: "smoothstep",
+
+    animated: true,
   },
 ];
